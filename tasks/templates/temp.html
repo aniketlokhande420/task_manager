@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'tasks/css/styles.css' %}">
+    <style>
+        /* Basic styles for the message box */
+        .messages {
+            list-style: none;
+            padding: 0;
+        }
+        .alert {
+            padding: 15px;
+            background-color: #f44336; /* Red background */
+            color: white;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .alert.success { background-color: #4CAF50; } /* Green for success */
+        .alert.info { background-color: #2196F3; } /* Blue for info */
+        .alert.warning { background-color: #ff9800; } /* Orange for warning */
+
+        /* Style for the close button */
+        .closebtn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .closebtn:hover {
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Register</h2>
+
+        <!-- Messages Block for displaying errors or info -->
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="alert {{ message.tags }}">
+                        {{ message }}
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Register</button>
+        </form>
+
+        <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+    </div>
+
+    <script>
+        // Optionally, you can add some advanced JavaScript here for smoother closing animations.
+    </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Action</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'tasks/css/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h2>Are you sure you want to {% if action == 'delete' %}delete{% elif action == 'complete' %}mark this task as completed{% endif %}?</h2>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit">Yes, {% if action == 'delete' %}Delete{% else %}Mark as Completed{% endif %}</button>
+        </form>
+        <a href="{% url 'dashboard' %}">Cancel</a>
+    </div>
+</body>
+</html>

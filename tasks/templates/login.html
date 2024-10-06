@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'tasks/css/styles.css' %}">
+    <style>
+        input[type="text"], input[type="email"], input[type="password"], textarea {
+    width: 94%;
+}
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 400px;">
+        <h2>Login</h2>
+
+        <form method="POST">
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                    <p class="error-message">{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% csrf_token %}
+            <div id="normal-login">
+                <input type="text" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Password" required style="margin-top: 1%;">
+                <button type="submit" name="action" value="login">Login</button>
+            </div>
+            <p id="or">or</p>
+            <button type="button" id="otp-login-btn">Login via OTP</button>
+        </form>
+        <div id="otp-login" style="display: none;">
+            <input type="text" id="otp-email" placeholder="Email" required>
+            <button type=submit id="send-otp-btn">Send OTP</button>
+            <form id="otp-form" method="POST" style="display: none;">
+                {% csrf_token %}
+                <input type="text" name="otp" style="margin-top: 14px;" placeholder="Enter OTP" maxlength="6" required>
+                <button type="submit" name="action" value="login_with_otp">Login with OTP</button>
+            </form>
+        </div>
+
+        <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+    </div>
+
+    <script>
+        document.getElementById('otp-login-btn').onclick = function() {
+            document.getElementById('normal-login').style.display = 'none';
+            document.getElementById('otp-login').style.display = 'block';
+            document.getElementById('or').style.display = 'none';
+            this.style.display = 'none'; // Hide the "Login via OTP" button
+        };
+
+        // document.getElementById('send-otp-btn').onclick = function() {
+        //     const email = document.getElementById('otp-email').value;
+        //     const formData = new FormData();
+        //     formData.append('email', email);
+        //     formData.append('action', 'send_otp');
+
+        //     fetch("{% url 'login' %}", {
+        //         method: 'POST',
+        //         body: formData,
+        //         headers: {
+        //             'X-CSRFToken': '{{ csrf_token }}'
+        //         }
+        //     })
+        //     .then(response => {
+        //         if (response.ok) {
+        //             document.getElementById('otp-form').style.display = 'block'; // Show OTP input form
+        //             alert('OTP sent to your email. Please check your inbox.');
+        //         } else {
+        //             alert('Error sending OTP. Please try again.');
+        //         }
+        //     });
+        // };
+
+        // This function ensures that the form is submitted when the user enters the OTP.
+
+
+        document.getElementById('send-otp-btn').onclick = function() {
+    const email = document.getElementById('otp-email').value;
+
+    // Clear any existing error messages
+    const errorElement = document.getElementById('otp-email-error');
+    if (errorElement) {
+        errorElement.innerText = '';
+    }
+
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('action', 'send_otp');
+
+    fetch("{% url 'login' %}", {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            // Display error message returned by the server
+            displayOtpError(data.error);
+        } else {
+            // OTP was successfully sent, show OTP form
+            document.getElementById('otp-form').style.display = 'block';
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+};
+
+            // Function to display error messages
+        function displayOtpError(message) {
+    let errorElement = document.getElementById('otp-email-error');
+    if (!errorElement) {
+        // Create error message element if it doesn't exist
+        errorElement = document.createElement('div');
+        errorElement.id = 'otp-email-error';
+        errorElement.style.color = 'red';
+        document.getElementById('otp-email').parentNode.appendChild(errorElement);
+    }
+    errorElement.innerText = message;
+}
+
+        document.getElementById('otp-form').onsubmit = function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const email = document.getElementById('otp-email').value; // Retrieve email
+            const otp = this.querySelector('input[name="otp"]').value; // Get OTP input value
+
+            const formData = new FormData();
+            formData.append('email', email); // Add email to the form data
+            formData.append('otp', otp); // Add OTP to the form data
+            formData.append('action', 'login_with_otp'); // Specify the action
+
+            fetch("{% url 'login' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = "{% url 'dashboard' %}"; // Redirect to dashboard
+                } else {
+                    alert('Invalid or expired OTP. Please try again.');
+                }
+            });
+        };
+    </script>
+    
+</body>
+</html>
