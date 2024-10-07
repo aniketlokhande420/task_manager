@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -129,6 +130,9 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",  # Base directory for all static files
 ]
 
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -142,12 +146,6 @@ EMAIL_HOST_USER = 'realistworld1@gmail.com'  # Your actual email address
 EMAIL_HOST_PASSWORD = ''  # Your email password or app-specific password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-# settings.py
-
-import os
-
-# Get the base directory
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 LOGGING = {
     'version': 1,
@@ -166,7 +164,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/django.log'),  # Logs will be stored in a 'logs' folder
+            'filename': BASE_DIR/'logs/django.log',  # Logs will be stored in a 'logs' folder
             'formatter': 'verbose',
         },
         'console': {
