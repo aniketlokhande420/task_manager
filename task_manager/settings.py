@@ -14,7 +14,6 @@ from pathlib import Path
 import urllib.parse
 from decouple import config
 
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY')
 MONGO_USER = config('MONGO_USER')
