@@ -12,11 +12,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import urllib.parse
-from decouple import Config, RepositoryEnv
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-ENV_PATH = BASE_DIR / ".env"
-config = Config(RepositoryEnv(ENV_PATH.resolve()))
+
 SECRET_KEY = config('SECRET_KEY')
 MONGO_USER = config('MONGO_USER')
 MONGO_PASSWORD=config('MONGO_PASSWORD')
