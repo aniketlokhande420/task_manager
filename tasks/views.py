@@ -126,9 +126,11 @@ def register_user(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
+            user = form.save(commit=False)
             # Create the user
+            user.email = form.cleaned_data.get('email')
+            user.username = form.cleaned_data.get('email')
             email = form.cleaned_data.get('email')
-            password = form.cleaned_data.get('password')
             # print(User.objects.get(username=email).query)
             print(User.objects.filter(username=email))
             # return None
@@ -137,8 +139,9 @@ def register_user(request):
                 messages.error(request, 'user already exists')
                 return render(request, 'register.html', {'form': form})
 
-             
-            user = User.objects.create_user(username=email, email=email, password=password)
+            print("password", user.password)
+            user.save()
+            # user = User.objects.create_user(user)
 
             # Create user profile
             user_profile = UserProfile.objects.create(user=user)
@@ -167,8 +170,11 @@ def login_user(request):
         if action == 'login':
             # Regular login
             print(email, password)
+            user_get = User.objects.get(email = email)
+            print("user_get",user_get)
             user = authenticate(request, username=email, password=password)
             print(user)
+            
             if user is not None:
                 login(request, user)
                 return redirect('dashboard')

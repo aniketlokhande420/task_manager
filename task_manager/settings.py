@@ -11,7 +11,17 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import urllib.parse
+from decouple import Config, RepositoryEnv
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+ENV_PATH = BASE_DIR / ".env"
+config = Config(RepositoryEnv(ENV_PATH.resolve()))
+SECRET_KEY = config('SECRET_KEY')
+MONGO_USER = config('MONGO_USER')
+MONGO_PASSWORD=config('MONGO_PASSWORD')
+EMAIL_HOST_USER=config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD=config('EMAIL_HOST_PASSWORD')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,10 +30,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-o&1lbr=@-1qv(mn(_ul@is9f8s)-&ivntrt80u=(hx@&b4ao%_'
+SECRET_KEY = SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -42,7 +52,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -82,12 +91,26 @@ WSGI_APPLICATION = 'task_manager.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#       'default': {
+#           'ENGINE': 'djongo',
+#           'NAME': 'TasksDB',
+#       }
+#   }
+
+username = urllib.parse.quote_plus(MONGO_USER)
+password = urllib.parse.quote_plus(MONGO_PASSWORD)
+
 DATABASES = {
-      'default': {
-          'ENGINE': 'djongo',
-          'NAME': 'TasksDB',
-      }
-  }
+    'default': {
+        'ENGINE': 'djongo',
+        "CLIENT": {
+           "name": 'TasksDB',
+           "host": 'mongodb+srv://{}:{}@anikets-cluster.eu8u5.mongodb.net/?retryWrites=true&w=majority&appName=Anikets-Cluster'.format(username, password),
+           "authMechanism": "SCRAM-SHA-1",
+        }, 
+    }
+}
 
 
 # Password validation
@@ -142,8 +165,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # For example, if using Gmail
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'realistworld1@gmail.com'  # Your actual email address
-EMAIL_HOST_PASSWORD = ''  # Your email password or app-specific password
+EMAIL_HOST_USER = EMAIL_HOST_USER  # Your actual email address
+EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD  # Your email password or app-specific password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
